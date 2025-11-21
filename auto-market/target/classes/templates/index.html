@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Auto Marketplace — Головна</title>
+    <link rel="stylesheet" th:href="@{/webjars/bootstrap/5.2.3/css/bootstrap.min.css}" />
+    <link rel="stylesheet" th:href="@{/css/styles.css}" />
+</head>
+<body>
+<nav class="navbar navbar-expand-lg navbar-light bg-light">
+    <div class="container">
+        <a class="navbar-brand" href="/">AutoMarket</a>
+        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navnav">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="collapse navbar-collapse" id="navnav">
+            <ul class="navbar-nav ms-auto">
+                <li class="nav-item"><a class="nav-link" href="/car/form">Додати оголошення</a></li>
+                <li class="nav-item"><a class="nav-link" href="#">Про нас</a></li>
+            </ul>
+        </div>
+    </div>
+</nav>
+
+<div class="container mt-4">
+    <div class="row mb-3">
+        <div class="col-md-8">
+            <form method="get" action="/">
+                <div class="input-group">
+                    <input name="q" type="search" class="form-control" placeholder="Пошук: марка, модель..." th:value="${query}" />
+                    <select name="make" class="form-select" th:value="${make}">
+                        <option value="">Всі марки</option>
+                        <option th:each="m : ${makes}" th:value="${m}" th:text="${m}"></option>
+                    </select>
+                    <input name="minPrice" class="form-control" type="number" placeholder="Ціна від" th:value="${minPrice}" />
+                    <input name="maxPrice" class="form-control" type="number" placeholder="Ціна до" th:value="${maxPrice}" />
+                    <input name="minMileage" class="form-control" type="number" placeholder="Пробіг від" th:value="${minMileage}" />
+                    <input name="maxMileage" class="form-control" type="number" placeholder="Пробіг до" th:value="${maxMileage}" />
+                    <button class="btn btn-primary" type="submit">Пошук</button>
+                </div>
+            </form>
+        </div>
+        <div class="col-md-4 text-end d-none d-md-block">
+            <a class="btn btn-outline-secondary" href="/car/form">Додати оголошення</a>
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="col-12">
+            <h4>Оголошення</h4>
+        </div>
+
+        <div class="col-md-4 mb-4" th:each="car : ${cars}">
+            <div class="card h-100">
+                <img th:src="${car.imageUrl}" class="card-img-top" alt="car image"/>
+                <div class="card-body">
+                    <h5 class="card-title" th:text="${car.make + ' ' + car.model}"></h5>
+                    <p class="card-text">Рік: <span th:text="${car.year}"></span></p>
+                    <p class="card-text">Пробіг: <span th:text="${car.mileage}"></span> км</p>
+                    <p class="card-text">Місто: <span th:text="${car.location}"></span></p>
+                </div>
+                <div class="card-footer d-flex justify-content-between align-items-center">
+                    <strong th:text="${#numbers.formatInteger(car.price)} + ' ₴'"></strong>
+                    <a th:href="@{'/car/' + ${car.id}}" class="btn btn-sm btn-outline-primary">Детальніше</a>
+                </div>
+            </div>
+        </div>
+
+    </div>
+</div>
+
+<script th:src="@{/webjars/bootstrap/5.2.3/js/bootstrap.bundle.min.js}"></script>
+</body>
+</html>

@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Форма авто</title>
+    <link rel="stylesheet" th:href="@{/webjars/bootstrap/5.2.3/css/bootstrap.min.css}" />
+</head>
+<body>
+<div class="container py-4">
+    <a href="/" class="btn btn-outline-secondary mb-3">Назад</a>
+
+    <form action="/car/save" method="post" class="row g-3">
+        <input type="hidden" name="id" th:value="${car.id}" />
+
+        <div class="col-md-6">
+            <label class="form-label">Марка</label>
+            <input class="form-control" name="make" th:value="${car.make}" required />
+        </div>
+
+        <div class="col-md-6">
+            <label class="form-label">Модель</label>
+            <input class="form-control" name="model" th:value="${car.model}" required />
+        </div>
+
+        <div class="col-md-4">
+            <label class="form-label">Рік</label>
+            <input class="form-control" name="year" type="number" th:value="${car.year}" required />
+        </div>
+
+        <div class="col-md-4">
+            <label class="form-label">Ціна</label>
+            <input class="form-control" name="price" type="number" th:value="${car.price}" required />
+        </div>
+
+        <div class="col-md-4">
+            <label class="form-label">Пробіг (км)</label>
+            <input class="form-control" name="mileage" type="number" th:value="${car.mileage}" />
+        </div>
+
+        <div class="col-12">
+            <label class="form-label">URL фото</label>
+            <input class="form-control" name="imageUrl" th:value="${car.imageUrl}" />
+        </div>
+
+        <div class="col-12">
+            <label class="form-label">Місто</label>
+            <input class="form-control" name="location" th:value="${car.location}" />
+        </div>
+
+        <div class="col-12 text-end">
+            <button class="btn btn-success" type="submit">Зберегти</button>
+        </div>
+    </form>
+</div>
+</body>
+</html>
