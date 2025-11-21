@@ -10,36 +10,58 @@ import java.util.stream.Collectors;
 
 @Service
 public class CarService {
-    private final List<Car> cars = new ArrayList<>();
 
-    @PostConstruct
-    public void init() {
-        cars.add(new Car(1L, "Toyota", "Corolla", 2018, 18000, "/images/corolla.jpg", "Kyiv", 85000));
-        cars.add(new Car(2L, "Ford", "Focus", 2017, 15000, "/images/focus.jpg", "Lviv", 120000));
-        cars.add(new Car(3L, "Renault", "Symbol", 2015, 9000, "/images/symbol.jpg", "Odesa", 145000));
-        cars.add(new Car(4L, "Chevrolet", "Aveo", 2014, 7000, "/images/aveo.jpg", "Kharkiv", 160000));
-    }
+    private List<Car> cars = new ArrayList<>(); // Твої авто
 
     public List<Car> findAll() {
         return cars;
     }
 
-    public List<Car> search(String q, String make, Integer minYear, Integer maxYear,
-                            Integer minPrice, Integer maxPrice, Integer minMileage, Integer maxMileage) {
-        String term = (q == null) ? "" : q.trim().toLowerCase();
-        return cars.stream()
-                .filter(c -> term.isEmpty() || (c.getMake() + " " + c.getModel()).toLowerCase().contains(term))
-                .filter(c -> (make == null || make.isEmpty()) || c.getMake().equalsIgnoreCase(make))
-                .filter(c -> (minYear == null) || c.getYear() >= minYear)
-                .filter(c -> (maxYear == null) || c.getYear() <= maxYear)
-                .filter(c -> (minPrice == null) || c.getPrice() >= minPrice)
-                .filter(c -> (maxPrice == null) || c.getPrice() <= maxPrice)
-                .filter(c -> (minMileage == null) || (c.getMileage() != null && c.getMileage() >= minMileage))
-                .filter(c -> (maxMileage == null) || (c.getMileage() != null && c.getMileage() <= maxMileage))
-                .collect(Collectors.toList());
-    }
+    public List<Car> filter(Map<String, String> params) {
+        Stream<Car> stream = cars.stream();
 
-    public void add(Car car) {
-        cars.add(car);
+        if (params.containsKey("brand")) {
+            String brand = params.get("brand").toLowerCase();
+            stream = stream.filter(c -> c.getBrand().toLowerCase().contains(brand));
+        }
+        if (params.containsKey("model")) {
+            String model = params.get("model").toLowerCase();
+            stream = stream.filter(c -> c.getModel().toLowerCase().contains(model));
+        }
+        if (params.containsKey("yearMin")) {
+            int yearMin = Integer.parseInt(params.get("yearMin"));
+            stream = stream.filter(c -> c.getYear() >= yearMin);
+        }
+        if (params.containsKey("yearMax")) {
+            int yearMax = Integer.parseInt(params.get("yearMax"));
+            stream = stream.filter(c -> c.getYear() <= yearMax);
+        }
+        if (params.containsKey("priceMax")) {
+            double priceMax = Double.parseDouble(params.get("priceMax"));
+            stream = stream.filter(c -> c.getPrice() <= priceMax);
+        }
+        if (params.containsKey("mileageMax")) {
+            int mileageMax = Integer.parseInt(params.get("mileageMax"));
+            stream = stream.filter(c -> c.getMileage() <= mileageMax);
+        }
+        if (params.containsKey("city")) {
+            String city = params.get("city").toLowerCase();
+            stream = stream.filter(c -> c.getCity().toLowerCase().contains(city));
+        }
+
+        List<Car> filtered = stream.collect(Collectors.toList());
+
+        // Сортування
+        String sortBy = params.getOrDefault("sortBy", "");
+        switch (sortBy) {
+            case "priceAsc": filtered.sort(Comparator.comparing(Car::getPrice)); break;
+            case "priceDesc": filtered.sort(Comparator.comparing(Car::getPrice).reversed()); break;
+            case "yearAsc": filtered.sort(Comparator.comparing(Car::getYear)); break;
+            case "yearDesc": filtered.sort(Comparator.comparing(Car::getYear).reversed()); break;
+            case "mileageAsc": filtered.sort(Comparator.comparing(Car::getMileage)); break;
+            case "mileageDesc": filtered.sort(Comparator.comparing(Car::getMileage).reversed()); break;
+        }
+
+        return filtered;
     }
 }
