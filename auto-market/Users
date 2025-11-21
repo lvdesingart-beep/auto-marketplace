@@ -1,0 +1,12 @@
+@Entity
+public class User {
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long id;
+
+    private String username;
+    private String password; // збережено у хешованому вигляді
+    private int maxAds = 5; // обмеження на кількість оголошень
+
+    // геттери/сеттери
+}
