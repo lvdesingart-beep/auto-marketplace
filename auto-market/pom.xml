@@ -1,60 +1,83 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<project xmlns="http://maven.apache.org/POM/4.0.0"
-         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0
-         http://maven.apache.org/xsd/maven-4.0.0.xsd">
-  <modelVersion>4.0.0</modelVersion>
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Auto Marketplace</title>
+    <link rel="stylesheet" th:href="@{/webjars/bootstrap/5.2.3/css/bootstrap.min.css}">
+    <script th:src="@{/webjars/bootstrap/5.2.3/js/bootstrap.bundle.min.js}"></script>
+</head>
+<body>
+<div class="container mt-4">
+    <h1>Auto Marketplace</h1>
 
-  <parent>
-    <groupId>org.springframework.boot</groupId>
-    <artifactId>spring-boot-starter-parent</artifactId>
-    <version>3.2.2</version>
-    <relativePath/>
-  </parent>
+    <!-- Фільтри -->
+    <form id="filterForm" class="row g-3 mb-4">
+        <div class="col-md-2">
+            <input type="text" class="form-control" placeholder="Марка" name="brand">
+        </div>
+        <div class="col-md-2">
+            <input type="text" class="form-control" placeholder="Модель" name="model">
+        </div>
+        <div class="col-md-2">
+            <input type="number" class="form-control" placeholder="Рік від" name="yearMin">
+        </div>
+        <div class="col-md-2">
+            <input type="number" class="form-control" placeholder="Рік до" name="yearMax">
+        </div>
+        <div class="col-md-2">
+            <input type="number" class="form-control" placeholder="Ціна до" name="priceMax">
+        </div>
+        <div class="col-md-2">
+            <input type="number" class="form-control" placeholder="Пробіг до" name="mileageMax">
+        </div>
+        <div class="col-md-2">
+            <input type="text" class="form-control" placeholder="Місто" name="city">
+        </div>
+        <div class="col-md-2">
+            <select class="form-select" name="sortBy">
+                <option value="">Сортувати</option>
+                <option value="priceAsc">Ціна ↑</option>
+                <option value="priceDesc">Ціна ↓</option>
+                <option value="yearAsc">Рік ↑</option>
+                <option value="yearDesc">Рік ↓</option>
+                <option value="mileageAsc">Пробіг ↑</option>
+                <option value="mileageDesc">Пробіг ↓</option>
+            </select>
+        </div>
+        <div class="col-md-2">
+            <button type="button" class="btn btn-primary" onclick="applyFilters()">Застосувати</button>
+        </div>
+    </form>
 
-  <groupId>com.example</groupId>
-  <artifactId>auto-marketplace</artifactId>
-  <version>0.0.1-SNAPSHOT</version>
+    <!-- Список авто -->
+    <div id="carList" class="row row-cols-1 row-cols-md-3 g-4">
+        <div th:each="car : ${cars}" class="col">
+            <div class="card h-100">
+                <img th:src="${car.image}" class="card-img-top" alt="Фото авто">
+                <div class="card-body">
+                    <h5 class="card-title" th:text="${car.brand} + ' ' + ${car.model}"></h5>
+                    <p class="card-text">
+                        Рік: <span th:text="${car.year}"></span><br>
+                        Ціна: $<span th:text="${car.price}"></span><br>
+                        Пробіг: <span th:text="${car.mileage}"></span> км<br>
+                        Місто: <span th:text="${car.city}"></span>
+                    </p>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
 
-  <properties>
-    <java.version>17</java.version>
-  </properties>
-
-  <dependencies>
-    <!-- Spring Boot Web -->
-    <dependency>
-      <groupId>org.springframework.boot</groupId>
-      <artifactId>spring-boot-starter-web</artifactId>
-    </dependency>
-
-    <!-- Thymeleaf -->
-    <dependency>
-      <groupId>org.springframework.boot</groupId>
-      <artifactId>spring-boot-starter-thymeleaf</artifactId>
-    </dependency>
-
-    <!-- Bootstrap -->
-    <dependency>
-      <groupId>org.webjars</groupId>
-      <artifactId>bootstrap</artifactId>
-      <version>5.2.3</version>
-    </dependency>
-
-    <!-- PostConstruct і інші анотації -->
-    <dependency>
-      <groupId>jakarta.annotation</groupId>
-      <artifactId>jakarta.annotation-api</artifactId>
-      <version>2.1.1</version>
-    </dependency>
-  </dependencies>
-
-  <build>
-    <plugins>
-      <plugin>
-        <groupId>org.springframework.boot</groupId>
-        <artifactId>spring-boot-maven-plugin</artifactId>
-      </plugin>
-    </plugins>
-  </build>
-
-</project>
+<script>
+function applyFilters() {
+    const form = document.getElementById('filterForm');
+    const params = new URLSearchParams(new FormData(form)).toString();
+    fetch('/cars/filter?' + params)
+        .then(response => response.text())
+        .then(html => {
+            document.getElementById('carList').innerHTML = html;
+        });
+}
+</script>
+</body>
+</html>
